@@ -1,6 +1,7 @@
 package com.gideon.consumer.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gideon.consumer.feign.MicroProviderFeign;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -23,12 +24,16 @@ public class ConsumerController {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private MicroProviderFeign providerFeign;
+
+
     @GetMapping("/call/echo/{message}")
     public String callEcho(@PathVariable String message) {
         // 访问应用 micro-provider 的 REST "/echo/{message}"
 //        return restTemplate.getForObject("http://127.0.0.1:9001/echo/" + message, String.class);
-        String result = restTemplate.getForObject("http://micro-provider/echo/" + message, String.class);
-
+//        String result = restTemplate.getForObject("http://micro-provider/echo/" + message, String.class);
+        String result = providerFeign.echo(message);
         log.info(JSONObject.toJSONString(result));
 
         return result;
